@@ -4,9 +4,7 @@ import './App.css'
 
 function App() {
     const [studentName, setStudentName] = useState('');
-    const [studentLists, setStudentLists] = useState([
-        // {id:1, name:'Alamin', isPresent:false}
-    ]);
+    const [studentLists, setStudentLists] = useState([]);
     const [editMode, setEditMode] = useState(false);
     const [editableStudent, setEditableStudent] = useState(null)
     const [error, setError] = useState('')
@@ -32,7 +30,7 @@ function App() {
             name: studentName,
             isPresent:undefined,
         }
-        setStudentLists([...studentLists, newstudent])
+        setStudentLists([newstudent, ...studentLists])
         setStudentName('')
     }
     // handleEdit
@@ -60,27 +58,40 @@ function App() {
         setStudentLists(updateStudent)
     }
     // handleMakePresent
-    const handleMakePresent = (student)=>{
-        if(student.ispresent !== undefined){
-            return alert(`This Student already Added ${student.isPresent === true? 'Present':'Absent'}`)
-         }
+    const handleMakePresent = (student) =>{
+        if(student.isPresent !== undefined){
+            return alert(`This Student already Added ${student.isPresent === true ? 'Present':'Absent'}`)
+        }
         const updateStudent = studentLists.map((item)=>{
             if(item.id === student.id){
-                return {...item, isPresent:true}
+                return {...item, isPresent: true}
             }
             return item
         })
         setStudentLists(updateStudent)
-
     }
     // handleMakeAbsent
-    const handleMakeAbsent = (student)=>{
-        if(student.ispresent !== undefined){
-            return alert(`This Student already Added ${student.isPresent === true? 'Present':'Absent'}`)
-         }
+    const handleMakeAbsent = (student) =>{
+        if(student.isPresent !== undefined){
+            return alert(`This Student already Added ${student.isPresent === true ? 'Present':'Absent'}`)
+        }
         const updateStudent = studentLists.map((item)=>{
-            // console.log(item)
+            if(item.id === student.id){
+                return {...item, isPresent: false}
+            }
+            return item
         })
+        setStudentLists(updateStudent)
+    }
+    // handleToggleList
+    const handleToggleList = (student)=>{
+        const updatedStudent = studentLists.map((item)=>{
+            if(item.id === student.id){
+                return {...item, isPresent: !item.isPresent}
+            }
+            return item
+        })
+        setStudentLists(updatedStudent)
     }
     return (
         <div className=" m-5">
@@ -100,7 +111,7 @@ function App() {
                             <thead>
                                 <tr>
                                 <th scope="col">Name</th>
-                                <th scope="col">Action</th>
+                                <th className='text-end'>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -110,8 +121,8 @@ function App() {
                                             <td>
                                                 <div>{student.name}</div>
                                             </td>
-                                            <td>
-                                                <div className="d-flex gap-2">
+                                            <td className='text-end'> 
+                                                <div className="d-flex gap-2 justify-content-end">
                                                     <button onClick={()=>handleEdit(student)} className="btn btn-sm btn-secondary">Edit</button>
                                                     <button onClick={()=>handleRemove(student)} className="btn btn-sm btn-danger">Remove</button>
                                                     <button onClick={()=>handleMakePresent(student)} className="btn btn-sm btn-primary">Make Present</button>
@@ -135,7 +146,7 @@ function App() {
                             <thead>
                                 <tr>
                                 <th scope="col">Name</th>
-                                <th scope="col">Action</th>
+                                <th className="text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -147,9 +158,9 @@ function App() {
                                                     <div>{presentStudent.name}</div>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <div className="d-flex gap-2">
-                                                    <button className="btn btn-sm btn-secondary">Accidentally Added</button>
+                                            <td className="text-end">
+                                                <div className="d-flex gap-2 justify-content-end">
+                                                    <button onClick={()=>handleToggleList()} className="btn btn-sm btn-secondary">Accidentally Added</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -166,22 +177,26 @@ function App() {
                             <thead>
                                 <tr>
                                 <th scope="col">Name</th>
-                                <th scope="col">Action</th>
+                                <th className="text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <div className="d-flex gap-2 align-items-center">
-                                            <div>Tamim</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="d-flex gap-2">
-                                            <button className="btn btn-sm btn-secondary">Accidentally Added</button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                {
+                                    studentLists.filter((item)=> item.isPresent == false).map((absentStudent)=>(
+                                        <tr key={absentStudent.id}>
+                                            <td>
+                                                <div className="d-flex gap-2 align-items-center">
+                                                    <div>{absentStudent.name}</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="d-flex gap-2 justify-content-end">
+                                                    <button onClick={()=>handleToggleList(student)} className="btn btn-sm btn-secondary">Accidentally Added</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
                             </tbody>
                         </table>
                     </div>
