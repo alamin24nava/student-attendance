@@ -19,7 +19,7 @@ function App() {
     const handleSubmit = (e)=>{
         e.preventDefault()
         if(studentName.trim() === ''){
-            return setError('Please Provide Student Name')
+            return setError('Please Provide Something...')
         }else{
             setError('')
         }
