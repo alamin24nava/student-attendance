@@ -4,7 +4,9 @@ import './App.css'
 
 function App() {
     const [studentName, setStudentName] = useState('');
-    const [studentLists, setStudentLists] = useState([]);
+    const [studentLists, setStudentLists] = useState([
+        // {id:1, name:'Alamin', isPresent:false}
+    ]);
     const [editMode, setEditMode] = useState(false);
     const [editableStudent, setEditableStudent] = useState(null)
     const [error, setError] = useState('')
@@ -13,6 +15,7 @@ function App() {
     const handleStudentName = (e)=>{
         setStudentName(e.target.value)
     }
+    // handleSubmit
     const handleSubmit = (e)=>{
         e.preventDefault()
         if(studentName.trim() === ''){
@@ -20,10 +23,8 @@ function App() {
         }else{
             setError('')
         }
-        editMode === true? updateStudent() : createStudent()
-        
+        editMode === true? handleStudent() : createStudent() 
     }
-
     // createStudent
     const createStudent = ()=>{
         const newstudent = {
@@ -41,15 +42,46 @@ function App() {
         setEditableStudent(student)
     }
     // updateStudent
-    const updateStudent = ()=>{
-        console.log('Update')
+    const handleStudent = ()=>{
+        const updateStudent = studentLists.map((item)=>{
+            if(item.id === editableStudent.id){
+                return {...item, name:studentName}
+            }
+            return item
+        })
+        setStudentLists(updateStudent)
+        setEditableStudent(null)
+        setStudentName('')
+        setEditMode(false)
     }
     // handleRemove
     const handleRemove = (studentId)=>{
         const updateStudent = studentLists.filter((item)=> item.id !== studentId.id)
         setStudentLists(updateStudent)
     }
-    console.log(editableStudent)
+    // handleMakePresent
+    const handleMakePresent = (student)=>{
+        if(student.ispresent !== undefined){
+            return alert(`This Student already Added ${student.isPresent === true? 'Present':'Absent'}`)
+         }
+        const updateStudent = studentLists.map((item)=>{
+            if(item.id === student.id){
+                return {...item, isPresent:true}
+            }
+            return item
+        })
+        setStudentLists(updateStudent)
+
+    }
+    // handleMakeAbsent
+    const handleMakeAbsent = (student)=>{
+        if(student.ispresent !== undefined){
+            return alert(`This Student already Added ${student.isPresent === true? 'Present':'Absent'}`)
+         }
+        const updateStudent = studentLists.map((item)=>{
+            // console.log(item)
+        })
+    }
     return (
         <div className=" m-5">
             <form onSubmit={handleSubmit} className="w-25 mx-auto mb-5">
@@ -82,8 +114,8 @@ function App() {
                                                 <div className="d-flex gap-2">
                                                     <button onClick={()=>handleEdit(student)} className="btn btn-sm btn-secondary">Edit</button>
                                                     <button onClick={()=>handleRemove(student)} className="btn btn-sm btn-danger">Remove</button>
-                                                    <button className="btn btn-sm btn-primary">Make Present</button>
-                                                    <button className="btn btn-sm btn-danger">Make Absent</button>
+                                                    <button onClick={()=>handleMakePresent(student)} className="btn btn-sm btn-primary">Make Present</button>
+                                                    <button onClick={()=>handleMakeAbsent(student)} className="btn btn-sm btn-danger">Make Absent</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -107,18 +139,22 @@ function App() {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <div className="d-flex gap-2 align-items-center">
-                                            <div>tamim</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="d-flex gap-2">
-                                            <button className="btn btn-sm btn-secondary">Accidentally Added</button>
-                                        </div>
-                                    </td>
-                                </tr>                              
+                                {
+                                    studentLists.filter((item)=> item.isPresent == true).map((presentStudent)=>(
+                                        <tr key={presentStudent.id}>
+                                            <td>
+                                                <div className="d-flex gap-2 align-items-center">
+                                                    <div>{presentStudent.name}</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="d-flex gap-2">
+                                                    <button className="btn btn-sm btn-secondary">Accidentally Added</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                }                            
                             </tbody>
                         </table>
                     </div>
